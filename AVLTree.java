@@ -1,11 +1,8 @@
-package Lab08AED;
+package avltree;
 
 import java.util.LinkedList;
 import java.util.Queue;
-
-import Lab07AED.BSTree;
-import Lab07AED.ItemDuplicated;
-import Lab07AED.ItemNoFound;
+import arbolesPractica01.*;
 
 public class AVLTree<E extends Comparable<E>> extends BSTree<E> {
     class NodeAVL extends Node<E> {
@@ -200,43 +197,49 @@ public class AVLTree<E extends Comparable<E>> extends BSTree<E> {
     // EJERCICIO 2
 
     public void remove(E x) throws ItemNoFound {
+        root = remove((AVLTree<E>.NodeAVL) root, x);
+    }
+
+    private NodeAVL remove(NodeAVL node, E x) throws ItemNoFound {
         if (isEmpty()) {
             throw new ItemNoFound();
         }
-        root = remove(root, x);
-    }
 
-    private Node<E> remove(Node<E> node, E x) throws ItemNoFound {
-        if (node == null) {
-            throw new ItemNoFound();
+        int compareResult = x.compareTo(node.data);
+
+        if (compareResult < 0) {
+            node.left = remove((AVLTree<E>.NodeAVL) node.left, x);
+            node = balanceToRight(node); // Balance after removing from left
+        } else if (compareResult > 0) {
+            node.right = remove((AVLTree<E>.NodeAVL) node.right, x);
+            node = balanceToLeft(node); // Balance after removing from right
+        } else {
+            // Node with two children
+            if (node.left != null && node.right != null) {
+                NodeAVL min = findMin((AVLTree<E>.NodeAVL) node.right);
+                node.data = min.data;
+                node.right = remove((AVLTree<E>.NodeAVL) node.right, node.data);
+                node = balanceToLeft(node); // Balance after removing successor
+            } else {
+                node = (node.left != null) ? (AVLTree<E>.NodeAVL) node.left : (AVLTree<E>.NodeAVL) node.right;
+            }
         }
 
-        int cmp = x.compareTo(node.data);
-        if (cmp < 0) {
-            node.left = remove(node.left, x);
-        } else if (cmp > 0) {
-            node.right = remove(node.right, x);
-        } else {
-            if (node.left == null && node.right == null) {
-                return null;
-            } else if (node.left == null) {
-                return node.right;
-            } else if (node.right == null) {
-                return node.left;
-            } else {
-                Node<E> successor = minRemove(node.right);
-                node.data = successor.data;
-                node.right = remove(node.right, successor.data);
-            }
+        return node;
+    }
+
+    private NodeAVL findMin(NodeAVL node) {
+        while (node.left != null) {
+            node = (AVLTree<E>.NodeAVL) node.left;
         }
         return node;
     }
 
     // EJERCICIO 3
 
-    public void breadthFirstTraversal() {
-        if (root == null) {
-            return;
+    public void breadthFirstTraversal() throws ItemNoFound{
+        if (isEmpty()) {
+            throw new ItemNoFound();
         }
 
         Queue<Node<E>> queue = new LinkedList<>();

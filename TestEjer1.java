@@ -1,8 +1,8 @@
-package Lab08AED;
+package avltree;
 
-import Lab07AED.BSTree;
-import Lab07AED.ItemDuplicated;
-import Lab07AED.ItemNoFound;
+import arbolesPractica01.BSTree;
+import arbolesPractica01.ItemDuplicated;
+import arbolesPractica01.ItemNoFound;
 
 public class TestEjer1 {
     public static void main(String[] args) {
